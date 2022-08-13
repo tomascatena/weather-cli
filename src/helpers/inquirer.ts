@@ -25,9 +25,9 @@ const menuOptions = [
 
 export const inquirerMenu = async () => {
   console.clear();
-  console.log('============================='.green);
-  console.log('Welcome to the Weather CLI'.white);
-  console.log('============================='.green);
+  console.log('==============================='.green);
+  console.log('Welcome to the Weather App CLI'.white);
+  console.log('==============================='.green);
   console.log('');
 
   const { option } = await inquirer.prompt(menuOptions);
