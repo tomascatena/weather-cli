@@ -1,7 +1,8 @@
 import 'colors';
 import { inquirerMenu, pause, readInput, listCities } from './helpers/inquirer';
-import { SearchHistory } from './models/SearchHistory';
+import { Place, SearchHistory } from './models/SearchHistory';
 import { config } from 'dotenv';
+import { saveToDB, readFromDB } from './helpers/DBHandlers';
 
 config();
 
@@ -9,6 +10,12 @@ const main = async () => {
   let option: number | null = null;
 
   const searchHistory = new SearchHistory();
+
+  const persistedSearchHistory = readFromDB();
+
+  if (persistedSearchHistory?.searchHistory?.length > 0) {
+    searchHistory.initialize(persistedSearchHistory.searchHistory);
+  }
 
   do {
     option = await inquirerMenu();
@@ -21,6 +28,7 @@ const main = async () => {
 
         if (!cities.length) {
           console.log(`No results found for`, `${targetCity}`.red.bold);
+          break;
         }
 
         const selectedCityId = await listCities(cities);
@@ -35,6 +43,9 @@ const main = async () => {
           console.log(`\n${'No weather data found for the city'.red.bold}`);
           break;
         }
+
+        searchHistory.addToSearchHistory(selectedCity);
+        searchHistory.saveSearchHistory();
 
         const weatherInfo = await searchHistory.getWeather(selectedCity);
 
@@ -62,7 +73,14 @@ const main = async () => {
         break;
 
       case 2:
-        console.log('View Search History');
+        searchHistory.getSearchHistory().length
+          ? searchHistory.getSearchHistory().forEach((city: Place, index) => {
+              console.log(`${index + 1}. ${city.name}`);
+            })
+          : console.log('Search history is empty'.blue.bold);
+
+        await pause();
+
         break;
 
       case 0:

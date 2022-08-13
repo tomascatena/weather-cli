@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { saveToDB } from '../helpers/DBHandlers';
 
 export interface Place {
   id: string;
@@ -30,7 +31,7 @@ interface WeatherInfo {
 }
 
 export class SearchHistory {
-  private history: any[] = [];
+  private history: Place[] = [];
 
   constructor() {
     // TODO: read from DB and populate history
@@ -101,5 +102,25 @@ export class SearchHistory {
     } catch (error) {
       return null;
     }
+  }
+
+  addToSearchHistory(city: Place) {
+    const existsInHistory = this.history.find((item: Place) => item.id === city.id);
+
+    if (!existsInHistory) {
+      this.history.push(city);
+    }
+  }
+
+  getSearchHistory(): Place[] {
+    return this.history;
+  }
+
+  initialize(persistedSearchHistory: Place[]) {
+    this.history = persistedSearchHistory;
+  }
+
+  saveSearchHistory() {
+    saveToDB(this.getSearchHistory());
   }
 }
