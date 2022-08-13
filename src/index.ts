@@ -24,14 +24,31 @@ const main = async () => {
 
           const selectedCity = cities.find((city: any) => city.id === selectedCityId);
 
-          // Show weather data
-          console.log(`\nInformation about the city\n`.white.bold);
-          console.log('City:'.green, selectedCity?.name);
-          console.log('Latitude:'.green, `${selectedCity?.latitude}°`);
-          console.log('Longitude:'.green, `${selectedCity?.longitude}°`);
-          console.log('Temperature:'.green, '32°C');
-          console.log('Minimum Temperature:'.green, '-10°C');
-          console.log('Maximum Temperature:'.green, '50°C');
+          let weatherInfo = null;
+          if (selectedCity) {
+            weatherInfo = await searchHistory.getWeather(selectedCity);
+          }
+
+          if (weatherInfo) {
+            console.log(`\nInformation about the city\n`.white.bold);
+            console.log('City:'.green, selectedCity?.name);
+            console.log('');
+            console.log('Latitude:'.green, `${selectedCity?.latitude}°`);
+            console.log('Longitude:'.green, `${selectedCity?.longitude}°`);
+            console.log('');
+            console.log(
+              'Weather description:'.green,
+              `${weatherInfo.weather.main} - ${weatherInfo?.weather?.description}`
+            );
+            console.log('Temperature:'.green, `${weatherInfo?.main?.temp}°C`);
+            console.log('Feels Like:'.green, `${weatherInfo?.main?.feels_like}°C`);
+            console.log('Minimum Temperature:'.green, `${weatherInfo?.main?.temp_min}°C`);
+            console.log('Maximum Temperature:'.green, `${weatherInfo?.main?.temp_max}°C`);
+            console.log('Pressure:'.green, `${weatherInfo?.main?.pressure}hPa`);
+            console.log('Humidity:'.green, `${weatherInfo?.main?.humidity}%`);
+          } else {
+            console.log(`\n${'No weather data found for the city'.red.bold}`);
+          }
         } else {
           console.log('No results found'.red.bgWhite.bold);
         }

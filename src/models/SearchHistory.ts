@@ -8,6 +8,27 @@ export interface Place {
   longitude: number;
 }
 
+interface WeatherInfo {
+  weather: {
+    description: string;
+    icon: string;
+    main: string;
+    id: number;
+  };
+  main: {
+    temp: number;
+    temp_min: number;
+    temp_max: number;
+    pressure: number;
+    humidity: number;
+    feels_like: number;
+  };
+  wind: {
+    speed: number;
+    deg: number;
+  };
+}
+
 export class SearchHistory {
   private history: any[] = [];
 
@@ -48,6 +69,37 @@ export class SearchHistory {
       }));
     } catch (error) {
       return [];
+    }
+  }
+
+  async getWeather(
+    city: Place,
+    { units = 'metric', lang = 'en' } = {}
+  ): Promise<WeatherInfo | null> {
+    try {
+      const BASE_URL = `https://api.openweathermap.org/data/2.5/weather`;
+      const ACCESS_TOKEN = process.env.OPENWEATHER_API_KEY;
+
+      const axiosInstance = axios.create({
+        baseURL: `${BASE_URL}`,
+        params: {
+          appid: ACCESS_TOKEN,
+          units,
+          lang,
+          lat: city.latitude,
+          lon: city.longitude,
+        },
+      });
+
+      const { data } = await axiosInstance.get('/');
+
+      return {
+        weather: data.weather[0],
+        main: data.main,
+        wind: data.wind,
+      };
+    } catch (error) {
+      return null;
     }
   }
 }
