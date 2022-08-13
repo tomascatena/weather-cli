@@ -19,38 +19,42 @@ const main = async () => {
 
         const cities = await searchHistory.searchCity(targetCity);
 
-        if (cities.length > 0) {
-          const { selectedCityId } = await listCities(cities);
+        if (!cities.length) {
+          console.log(`No results found for`, `${targetCity}`.red.bold);
+        }
 
-          const selectedCity = cities.find((city: any) => city.id === selectedCityId);
+        const selectedCityId = await listCities(cities);
 
-          let weatherInfo = null;
-          if (selectedCity) {
-            weatherInfo = await searchHistory.getWeather(selectedCity);
-          }
+        if (selectedCityId === '0') {
+          break;
+        }
 
-          if (weatherInfo) {
-            console.log(`\nInformation about the city\n`.white.bold);
-            console.log('City:'.green, selectedCity?.name);
-            console.log('');
-            console.log('Latitude:'.green, `${selectedCity?.latitude}°`);
-            console.log('Longitude:'.green, `${selectedCity?.longitude}°`);
-            console.log('');
-            console.log(
-              'Weather description:'.green,
-              `${weatherInfo.weather.main} - ${weatherInfo?.weather?.description}`
-            );
-            console.log('Temperature:'.green, `${weatherInfo?.main?.temp}°C`);
-            console.log('Feels Like:'.green, `${weatherInfo?.main?.feels_like}°C`);
-            console.log('Minimum Temperature:'.green, `${weatherInfo?.main?.temp_min}°C`);
-            console.log('Maximum Temperature:'.green, `${weatherInfo?.main?.temp_max}°C`);
-            console.log('Pressure:'.green, `${weatherInfo?.main?.pressure}hPa`);
-            console.log('Humidity:'.green, `${weatherInfo?.main?.humidity}%`);
-          } else {
-            console.log(`\n${'No weather data found for the city'.red.bold}`);
-          }
-        } else {
-          console.log('No results found'.red.bgWhite.bold);
+        const selectedCity = cities.find((city: any) => city.id === selectedCityId);
+
+        if (!selectedCity) {
+          console.log(`\n${'No weather data found for the city'.red.bold}`);
+          break;
+        }
+
+        const weatherInfo = await searchHistory.getWeather(selectedCity);
+
+        if (weatherInfo) {
+          console.log(`\nInformation about the city\n`.white.bold);
+          console.log('City:', selectedCity?.name.green);
+          console.log('');
+          console.log('Latitude:', `${selectedCity?.latitude}°`.yellow);
+          console.log('Longitude:', `${selectedCity?.longitude}°`.yellow);
+          console.log('');
+          console.log(
+            'Weather description:',
+            `${weatherInfo.weather.main} - ${weatherInfo?.weather?.description}`.green
+          );
+          console.log('Temperature:', `${weatherInfo?.main?.temp}°C`.yellow);
+          console.log('Feels Like:', `${weatherInfo?.main?.feels_like}°C`.yellow);
+          console.log('Minimum Temperature:', `${weatherInfo?.main?.temp_min}°C`.yellow);
+          console.log('Maximum Temperature:', `${weatherInfo?.main?.temp_max}°C`.yellow);
+          console.log('Pressure:', `${weatherInfo?.main?.pressure}hPa`.yellow);
+          console.log('Humidity:', `${weatherInfo?.main?.humidity}%`.yellow);
         }
 
         await pause();
@@ -62,11 +66,10 @@ const main = async () => {
         break;
 
       case 0:
-        console.log('Exit');
         break;
 
       default:
-        console.log('Invalid option');
+        console.log('Invalid option'.red.bgWhite.bold);
     }
   } while (option !== 0);
 

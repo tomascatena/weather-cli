@@ -66,7 +66,7 @@ export const confirmSelection = async (message: string): Promise<boolean> => {
   return answer;
 };
 
-export const listCities = async (places: Place[]) => {
+export const listCities = async (places: Place[]): Promise<string> => {
   const choices = places.map((place, index) => ({
     value: place.id,
     name: `${(index + 1).toString().green}. ${place.name}`,
@@ -84,7 +84,5 @@ export const listCities = async (places: Place[]) => {
     choices,
   });
 
-  return {
-    selectedCityId,
-  };
+  return selectedCityId;
 };
