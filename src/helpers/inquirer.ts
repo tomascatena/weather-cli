@@ -1,5 +1,6 @@
 import inquirer from 'inquirer';
 import 'colors';
+import { Place } from '../models/SearchHistory';
 
 const menuOptions = [
   {
@@ -63,4 +64,27 @@ export const confirmSelection = async (message: string): Promise<boolean> => {
   });
 
   return answer;
+};
+
+export const listCities = async (places: Place[]) => {
+  const choices = places.map((place, index) => ({
+    value: place.id,
+    name: `${(index + 1).toString().green}. ${place.name}`,
+  }));
+
+  choices.unshift({
+    value: '0',
+    name: `${'0'.green}. Cancel`,
+  });
+
+  const { selectedCityId } = await inquirer.prompt({
+    type: 'list',
+    name: 'selectedCityId',
+    message: 'Select a city:',
+    choices,
+  });
+
+  return {
+    selectedCityId,
+  };
 };

@@ -1,5 +1,13 @@
 import axios from 'axios';
 
+export interface Place {
+  id: string;
+  name: string;
+  center: number[];
+  latitude: number;
+  longitude: number;
+}
+
 export class SearchHistory {
   private history: any[] = [];
 
@@ -10,7 +18,7 @@ export class SearchHistory {
   async searchCity(
     city: string,
     { limit = 10, proximity = 'ip', language = 'en', fuzzyMatch = true } = {}
-  ) {
+  ): Promise<Place[]> {
     try {
       const BASE_URL = `https://api.mapbox.com/geocoding/v5/mapbox.places`;
       const ACCESS_TOKEN = process.env.MAPBOX_TOKEN;
@@ -27,9 +35,17 @@ export class SearchHistory {
         },
       });
 
-      const { data } = await axiosInstance.get('/');
+      const {
+        data: { features },
+      } = await axiosInstance.get('/');
 
-      return data;
+      return features.map((place: any) => ({
+        id: place.id,
+        name: place.place_name,
+        latitude: place.center[1],
+        longitude: place.center[0],
+        center: place.center,
+      }));
     } catch (error) {
       return [];
     }
