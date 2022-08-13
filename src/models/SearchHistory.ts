@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { saveToDB } from '../helpers/DBHandlers';
+import { saveToDB, readFromDB } from '../helpers/DBHandlers';
 
 export interface Place {
   id: string;
@@ -116,8 +116,12 @@ export class SearchHistory {
     return this.history;
   }
 
-  initialize(persistedSearchHistory: Place[]) {
-    this.history = persistedSearchHistory;
+  initialize() {
+    const persistedSearchHistory = readFromDB();
+
+    if (persistedSearchHistory?.searchHistory?.length > 0) {
+      this.history = persistedSearchHistory.searchHistory;
+    }
   }
 
   saveSearchHistory() {

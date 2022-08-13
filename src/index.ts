@@ -2,7 +2,6 @@ import 'colors';
 import { inquirerMenu, pause, readInput, listCities } from './helpers/inquirer';
 import { Place, SearchHistory } from './models/SearchHistory';
 import { config } from 'dotenv';
-import { saveToDB, readFromDB } from './helpers/DBHandlers';
 
 config();
 
@@ -11,11 +10,7 @@ const main = async () => {
 
   const searchHistory = new SearchHistory();
 
-  const persistedSearchHistory = readFromDB();
-
-  if (persistedSearchHistory?.searchHistory?.length > 0) {
-    searchHistory.initialize(persistedSearchHistory.searchHistory);
-  }
+  searchHistory.initialize();
 
   do {
     option = await inquirerMenu();
